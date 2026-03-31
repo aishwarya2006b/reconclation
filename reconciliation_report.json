@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-03-31T09:05:36.100244",
+  "summary": {
+    "total_ledger_transactions": 50,
+    "total_bank_settlements": 51,
+    "timing_gaps_found": 1,
+    "rounding_differences_found": 3,
+    "duplicate_ledger_groups": 1,
+    "duplicate_bank_entries": 2,
+    "orphan_refunds_found": 4
+  },
+  "discrepancies": {
+    "timing_gaps": [
+      {
+        "txn_id": "TXN-0029",
+        "initiated_at": "2024-01-05",
+        "settled_at": "2024-02-08",
+        "gap_days": 33,
+        "amount": 498.69,
+        "merchant_id": "MER-008"
+      }
+    ],
+    "rounding_differences": [
+      {
+        "txn_id": "TXN-0019",
+        "type": "CHARGE",
+        "ledger_amount": 353.89,
+        "settled_amount": 353.91,
+        "difference": 0.02,
+        "merchant_id": "MER-002"
+      },
+      {
+        "txn_id": "TXN-0008",
+        "type": "CHARGE",
+        "ledger_amount": 406.62,
+        "settled_amount": 406.63,
+        "difference": 0.01,
+        "merchant_id": "MER-007"
+      },
+      {
+        "txn_id": "TXN-0036",
+        "type": "CHARGE",
+        "ledger_amount": 64.66,
+        "settled_amount": 64.67,
+        "difference": 0.01,
+        "merchant_id": "MER-008"
+      }
+    ],
+    "duplicates": {
+      "ledger": [
+        {
+          "txn_ids": [
+            "TXN-0031",
+            "TXN-0031-DUP"
+          ],
+          "type": "CHARGE",
+          "amount": 317.45,
+          "date": "2024-01-26",
+          "merchant_id": "MER-007"
+        }
+      ],
+      "bank": [
+        {
+          "txn_id": "TXN-0012",
+          "settlement_ids": [
+            "SET-00012",
+            "SET-00050-DUP"
+          ],
+          "count": 2
+        },
+        {
+          "txn_id": "TXN-0025",
+          "settlement_ids": [
+            "SET-00025",
+            "SET-00051-DUP"
+          ],
+          "count": 2
+        }
+      ]
+    },
+    "orphan_refunds": [
+      {
+        "txn_id": "TXN-0041",
+        "amount": -23.76,
+        "ref_txn_id": "TXN-GHOST-41",
+        "initiated_at": "2024-01-25",
+        "merchant_id": "MER-009"
+      },
+      {
+        "txn_id": "TXN-0042",
+        "amount": -95.81,
+        "ref_txn_id": "TXN-GHOST-42",
+        "initiated_at": "2024-01-17",
+        "merchant_id": "MER-010"
+      },
+      {
+        "txn_id": "TXN-0043",
+        "amount": -39.17,
+        "ref_txn_id": "TXN-GHOST-43",
+        "initiated_at": "2024-01-01",
+        "merchant_id": "MER-006"
+      },
+      {
+        "txn_id": "TXN-0044",
+        "amount": -89.08,
+        "ref_txn_id": "TXN-GHOST-44",
+        "initiated_at": "2024-01-27",
+        "merchant_id": "MER-004"
+      }
+    ]
+  }
+}

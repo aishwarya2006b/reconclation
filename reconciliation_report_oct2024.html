@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reconciliation Report — October 2024</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #080b0f;
+    --s1:      #0d1117;
+    --s2:      #111620;
+    --border:  #1c2230;
+    --border2: #252d3d;
+    --text:    #c8d1e0;
+    --muted:   #4e5a6e;
+    --accent:  #00dba8;
+    --warn:    #f0a500;
+    --err:     #f04060;
+    --info:    #3db8e8;
+    --purple:  #9d7fe8;
+    --mono:    'IBM Plex Mono', monospace;
+    --sans:    'Syne', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--s1);
+    border-bottom: 1px solid var(--border2);
+    padding: 28px 48px 22px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  }
+  .topbar-left { display: flex; flex-direction: column; gap: 5px; }
+  .topbar-eyebrow {
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.15em;
+  }
+  .topbar h1 { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.4px; }
+  .topbar h1 em { font-style: normal; color: var(--accent); }
+  .topbar-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .topbar-right {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    text-align: right; line-height: 2;
+  }
+  .topbar-right strong { color: var(--text); }
+
+  /* ── STAT ROW ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border-bottom: 1px solid var(--border2);
+  }
+  .stat {
+    background: var(--s2); padding: 18px 24px;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .stat:last-child { border-right: none; }
+  .stat .num { font-size: 30px; font-weight: 800; line-height: 1; }
+  .stat .lbl { font-family: var(--mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .c-ok     { color: var(--accent); }
+  .c-warn   { color: var(--warn); }
+  .c-err    { color: var(--err); }
+  .c-info   { color: var(--info); }
+  .c-purple { color: var(--purple); }
+  .c-muted  { color: var(--text); }
+
+  /* ── MAIN ── */
+  main { padding: 36px 48px 48px; max-width: 1360px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 44px; }
+  .sec-hdr {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 12px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .sec-icon {
+    width: 32px; height: 32px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .ic-warn   { background: rgba(240,165,0,.12); border: 1px solid rgba(240,165,0,.28); }
+  .ic-info   { background: rgba(61,184,232,.12); border: 1px solid rgba(61,184,232,.28); }
+  .ic-err    { background: rgba(240,64,96,.12);  border: 1px solid rgba(240,64,96,.28); }
+  .ic-purple { background: rgba(157,127,232,.12); border: 1px solid rgba(157,127,232,.28); }
+  .sec-hdr h2 { font-size: 15px; font-weight: 600; color: #fff; }
+  .sec-hdr .cnt {
+    margin-left: auto; font-family: var(--mono); font-size: 10px; color: var(--muted);
+    background: var(--border2); border-radius: 20px; padding: 2px 10px;
+  }
+  .sec-desc { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+
+  /* ── TABLE ── */
+  .tw { overflow-x: auto; border-radius: 7px; border: 1px solid var(--border2); }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #0f1420; border-bottom: 1px solid var(--border2); }
+  thead th {
+    padding: 9px 16px; text-align: left; font-family: var(--mono);
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); font-weight: 600; white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,.018); }
+  td { padding: 9px 16px; font-size: 12.5px; vertical-align: middle; }
+
+  /* ── MISC ── */
+  .mono  { font-family: var(--mono); font-size: 11.5px; color: #8da0b8; }
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    font-weight: 600; padding: 2px 7px; border-radius: 4px;
+  }
+  .bw  { background: rgba(240,165,0,.12); color: var(--warn);   border: 1px solid rgba(240,165,0,.3); }
+  .be  { background: rgba(240,64,96,.12);  color: var(--err);   border: 1px solid rgba(240,64,96,.3); }
+  .bi  { background: rgba(61,184,232,.12); color: var(--info);  border: 1px solid rgba(61,184,232,.3); }
+  .bp  { background: rgba(157,127,232,.12);color: var(--purple);border: 1px solid rgba(157,127,232,.3); }
+  .empty-row { color: var(--muted); font-style: italic; text-align: center; padding: 22px !important; }
+
+  .sub-lbl {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin: 18px 0 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .sub-lbl::before { content:''; display:inline-block; width:3px; height:10px; border-radius:2px; }
+  .sl-info::before   { background: var(--info); }
+  .sl-err::before    { background: var(--err); }
+
+  /* ── INSIGHT BOX ── */
+  .insight {
+    background: rgba(240,64,96,.06); border: 1px solid rgba(240,64,96,.2);
+    border-radius: 7px; padding: 12px 16px; margin-bottom: 14px;
+    font-family: var(--mono); font-size: 11px; color: #e8a0aa; line-height: 1.7;
+  }
+  .insight strong { color: var(--err); }
+  .insight-ok {
+    background: rgba(0,219,168,.05); border: 1px solid rgba(0,219,168,.18);
+    color: #70c8b0;
+  }
+  .insight-ok strong { color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 48px;
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+  }
+  footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-eyebrow">Payments Platform · Reconciliation Engine</div>
+    <h1>October 2024 — <em>Discrepancy Report</em></h1>
+    <div class="topbar-sub">platform_transactions.json ↔ bank_statement_oct2024.csv</div>
+  </div>
+  <div class="topbar-right">
+    <div>Report window <strong>2024-10-01 → 2024-10-31</strong></div>
+    <div>Platform records <strong>52</strong></div>
+    <div>Bank settlements <strong>50</strong></div>
+    <div>Generated <strong>2024-11-01</strong></div>
+  </div>
+</div>
+
+<!-- STAT ROW -->
+<div class="stat-row">
+  <div class="stat">
+    <div class="num c-muted">52</div>
+    <div class="lbl">Platform Txns</div>
+  </div>
+  <div class="stat">
+    <div class="num c-muted">50</div>
+    <div class="lbl">Bank Settlements</div>
+  </div>
+  <div class="stat">
+    <div class="num c-warn">10</div>
+    <div class="lbl">Timing Gaps</div>
+  </div>
+  <div class="stat">
+    <div class="num c-ok">0</div>
+    <div class="lbl">Rounding Diffs</div>
+  </div>
+  <div class="stat">
+    <div class="num c-err">2</div>
+    <div class="lbl">Duplicate Groups</div>
+  </div>
+  <div class="stat">
+    <div class="num c-purple">1</div>
+    <div class="lbl">Orphan Refunds</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ── 1. TIMING GAPS ────────────────────────── -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-icon ic-warn">⏱</div>
+      <h2>Timing Gaps</h2>
+      <div class="cnt">10 transactions · settlement lag &gt;2 days</div>
+    </div>
+    <p class="sec-desc">Transactions where bank settlement date exceeds platform initiation date by more than 2 business days. Worst case: Netflix TXN-20241010-0016 settled 21 days late on Oct 31 — possible month-end batch sweep.</p>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>TXN ID</th>
+          <th>Merchant</th>
+          <th>Platform Date</th>
+          <th>Settled Date</th>
+          <th>Lag</th>
+          <th>Amount</th>
+          <th>Bank Ref</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">TXN-20241010-0016</span></td>
+            <td>Netflix Inc</td>
+            <td>2024-10-10</td>
+            <td>2024-10-31</td>
+            <td><span class="badge bw">21 days</span></td>
+            <td>$95.00</td>
+            <td><span class="mono">REF-8868-AV</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241010-0017</span></td>
+            <td>Spotify Premium</td>
+            <td>2024-10-10</td>
+            <td>2024-10-14</td>
+            <td><span class="badge bw">4 days</span></td>
+            <td>$14.99</td>
+            <td><span class="mono">REF-8837-Q</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241011-0018</span></td>
+            <td>Apple Store</td>
+            <td>2024-10-11</td>
+            <td>2024-10-15</td>
+            <td><span class="badge bw">4 days</span></td>
+            <td>$279.00</td>
+            <td><span class="mono">REF-8838-R</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241004-0009</span></td>
+            <td>Apple Store</td>
+            <td>2024-10-04</td>
+            <td>2024-10-07</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$500.00</td>
+            <td><span class="mono">REF-8829-I</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241018-0027</span></td>
+            <td>Delta Air Lines</td>
+            <td>2024-10-18</td>
+            <td>2024-10-21</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$210.00</td>
+            <td><span class="mono">REF-8847-AA</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241019-0029</span></td>
+            <td>Amazon Marketplace</td>
+            <td>2024-10-19</td>
+            <td>2024-10-22</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$399.00</td>
+            <td><span class="mono">REF-8849-AC</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241025-0038</span></td>
+            <td>Apple Store</td>
+            <td>2024-10-25</td>
+            <td>2024-10-28</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$115.00</td>
+            <td><span class="mono">REF-8858-AL</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241025-0039</span></td>
+            <td>Uber Technologies</td>
+            <td>2024-10-25</td>
+            <td>2024-10-28</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$28.60</td>
+            <td><span class="mono">REF-8859-AM</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241026-0041</span></td>
+            <td>Netflix Inc</td>
+            <td>2024-10-26</td>
+            <td>2024-10-29</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$175.00</td>
+            <td><span class="mono">REF-8861-AO</span></td>
+          </tr>
+          <tr>
+            <td><span class="mono">TXN-20241027-0043</span></td>
+            <td>Hilton Hotels</td>
+            <td>2024-10-27</td>
+            <td>2024-10-30</td>
+            <td><span class="badge bw">3 days</span></td>
+            <td>$488.00</td>
+            <td><span class="mono">REF-8863-AQ</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 2. ROUNDING DIFFERENCES ──────────────── -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-icon ic-info">≈</div>
+      <h2>Rounding Differences</h2>
+      <div class="cnt">0 found</div>
+    </div>
+    <div class="insight insight-ok">
+      <strong>✓ Clean.</strong> Daily merchant-level sums match exactly between platform and bank across all 50 settlement rows. No floating-point accumulation or bank truncation detected.
+    </div>
+  </div>
+
+  <!-- ── 3. DUPLICATES ─────────────────────────── -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-icon ic-err">⚠</div>
+      <h2>Duplicate Entries</h2>
+      <div class="cnt">1 platform group · 1 bank group</div>
+    </div>
+    <p class="sec-desc">Platform: matched on (merchant, amount, type, date). Bank: matched on reference_number. Both point to the same Netflix $95.00 transaction — a cross-system double-entry risk.</p>
+
+    <div class="insight">
+      <strong>⚠ Cross-system duplicate detected.</strong> Netflix $95.00 on Oct 29 appears twice in the platform ledger (TXN-20241029-0048 and TXN-20241029-0048B) AND the bank settled REF-8868-AV twice on Oct 31. The platform duplicate likely triggered the bank duplicate — total double-charged exposure: <strong>$95.00</strong>.
+    </div>
+
+    <div class="sub-lbl sl-info">Platform Ledger Duplicates</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Duplicate TXN IDs</th><th>Merchant</th><th>Type</th><th>Amount</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">TXN-20241029-0048 &amp; TXN-20241029-0048B</span></td>
+            <td>Netflix Inc</td>
+            <td>purchase</td>
+            <td>$95.00</td>
+            <td>2024-10-29</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sub-lbl sl-err">Bank Settlement Duplicates</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Reference</th><th>Merchant</th><th>Amount</th><th>Settled Date</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">REF-8868-AV</span></td>
+            <td>Netflix Inc</td>
+            <td>$95.00</td>
+            <td>2024-10-31</td>
+            <td><span class="badge be">2×</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 4. ORPHAN REFUNDS ──────────────────────── -->
+  <div class="section">
+    <div class="sec-hdr">
+      <div class="sec-icon ic-purple">↩</div>
+      <h2>Orphan Refunds</h2>
+      <div class="cnt">1 found</div>
+    </div>
+    <p class="sec-desc">Refunds where no matching original purchase exists within the October 2024 ledger window. These may reference prior-period transactions or indicate data integrity issues.</p>
+
+    <div class="insight">
+      <strong>⚠ Prior-period refund without origin.</strong> TXN-20241031-0051 is a $134.75 Amazon Marketplace refund explicitly tagged as referencing <span class="mono">TXN-20240918-XXXX</span> from <strong>September 2024</strong> — outside this reconciliation window. Requires cross-period lookup to verify the original purchase existed and was settled.
+    </div>
+
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Refund TXN ID</th>
+          <th>Merchant</th>
+          <th>Refund Amount</th>
+          <th>Date</th>
+          <th>Referenced Original</th>
+          <th>Note</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">TXN-20241031-0051</span></td>
+            <td>Amazon Marketplace</td>
+            <td>$134.75</td>
+            <td>2024-10-31</td>
+            <td><span class="mono" style="color:var(--err)">TXN-20240918-XXXX</span></td>
+            <td style="color:var(--muted); font-size:11px;">Original purchase from Sep 2024 — cross-period lookup required</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>reconciliation-engine v1.0 · real data mode · <span>Oct 2024</span></div>
+  <div>13 total discrepancy flags across 4 detectors</div>
+</footer>
+
+</body>
+</html>
